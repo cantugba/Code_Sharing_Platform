@@ -36,7 +36,31 @@ public class Controller {
 
     @GetMapping(path = "/code/new", produces = "text/html")
     public ResponseEntity<String> getHtmlCodeNew() {
-       // inprogresss
+        String scriptJS ="<script type=\"text/javascript\">\n" +
+                "function send() { \n" +
+                "   let object = {\n" +
+                "       \"code\": document.getElementById(\"code_snippet\").value\n" +
+                "    };\n" +
+                "    \n" +
+                "    let json = JSON.stringify(object);\n" +
+                "    \n" +
+                "    let xhr = new XMLHttpRequest();\n" +
+                "    xhr.open(\"POST\", '/api/code/new', false)\n" +
+                "    xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');\n" +
+                "    xhr.send(json);\n" +
+                "    \n" +
+                "    if (xhr.status == 200) {\n" +
+                "      alert(\"Success!\");\n" +
+                "    }\n" +
+                "}</script>";
+
+        String sendCode = "<title>Create</title>"
+                + "<body>"
+                + "<textarea id=\"code_snippet\">...</textarea>"
+                + "<button id=\"send_snippet\" type=\"submit\" onclick=\"send()\">Submit</button>"
+                + scriptJS
+                + "</body>";
+
         return ResponseEntity.ok().body(sendCode);
     }
 
