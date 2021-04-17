@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.*;
 import platform.model.Code;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 @RestController
@@ -32,6 +31,12 @@ public class Controller {
                 + "<pre id=\"code_snippet\">" + code.getCode() + "</pre>"
                 + "</body>";
 
+        return ResponseEntity.ok().body(sendCode);
+    }
+
+    @GetMapping(path = "/code/new", produces = "text/html")
+    public ResponseEntity<String> getHtmlCodeNew() {
+       // inprogresss
         return ResponseEntity.ok().body(sendCode);
     }
 
