@@ -1,7 +1,10 @@
 package platform.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import platform.model.Code;
 
 import java.time.LocalDateTime;
@@ -14,7 +17,7 @@ public class Controller {
     private final String titleData = "Code";
     private final String codeData =  "public static void main(String[] args) {\n    SpringApplication.run(CodeSharingPlatform.class, args);\n}";
 
-    private final Code code = new Code(titleData,codeData,getCurrentTime);
+    private final Code code = new Code(titleData,codeData,getCurrentDateTime());
 
     public Controller() {}
 
@@ -68,15 +71,14 @@ public class Controller {
     public String setApiCode(@RequestBody Code recode) {
         code.setCode(recode.getCode());
         code.setTitle("Code");
-        code.setDate(getCurrentTime());
+        code.setDate(getCurrentDateTime());
 
         return "{}";
     }
 
-    public String getCurrentTime(){
-        LocalDateTime today = new LocalDateTime.now();
-        DateTimeFormatter formatter = new DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
+    public String getCurrentDateTime() {
+        LocalDateTime today = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return today.format(formatter);
     }
 
