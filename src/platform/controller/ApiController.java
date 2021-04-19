@@ -1,12 +1,7 @@
 package platform.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 import platform.model.Code;
 import platform.repository.Repository;
 import platform.util.Util;
@@ -14,11 +9,12 @@ import platform.util.Util;
 import java.util.ArrayList;
 import java.util.List;
 
-@Controller
+@RestController
 public class ApiController {
+
     private Repository codeRepository;
 
-    public ApiController(){
+    public ApiController() {
     }
 
     @Autowired
@@ -31,19 +27,19 @@ public class ApiController {
         return codeRepository.getStorage().get(id - 1);
     }
 
-    @GetMapping(path = "/api/code/latest",produces = "application/json;charset=UTF-8")
+    @GetMapping(path = "/api/code/latest", produces = "application/json;charset=UTF-8")
     public Object[] getApiLatestCode() {
         List<Code> responseCode = new ArrayList<>();
-
-        for (int i = codeRepository.lastIndexRepository(); i >=codeRepository.outputLimitIndex() ; i--) {
+        for (int i = codeRepository.lastIndexRepository(); i >= codeRepository.outputLimitIndex(); i--) {
             Code eachCode = codeRepository.getStorage().get(i);
             responseCode.add(eachCode);
         }
-
         return responseCode.toArray();
     }
 
+
     @PostMapping(path = "/api/code/new", produces = "application/json;charset=UTF-8")
+    @ResponseBody
     public String setApiCode(@RequestBody Code newCode) {
         Code responseCode = new Code();
         responseCode.setCode(newCode.getCode());
@@ -53,4 +49,5 @@ public class ApiController {
         String response = "{ \"id\" : \"" + codeRepository.getStorage().size() + "\" }";
         return response;
     }
+
 }

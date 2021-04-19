@@ -3,8 +3,7 @@ package platform.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 import platform.model.Code;
 import platform.repository.Repository;
 
@@ -13,6 +12,7 @@ import java.util.List;
 
 @Controller
 public class HtmlController {
+
     private Repository codeRepository;
 
     public HtmlController() {
@@ -24,28 +24,31 @@ public class HtmlController {
     }
 
     @GetMapping(path = "/code/{id}", produces = "text/html")
-    public  String getHtmlCode(@PathVariable("id") int id, Model model) {
+    public String getHtmlCode(@PathVariable("id") int id, Model model) {
+
         Code responseCode = codeRepository.getStorage().get(id - 1);
-        model.addAttribute("responseCode, responseCode");
+        model.addAttribute("responseCode", responseCode);
 
         return "code";
     }
 
     @GetMapping(path = "/code/latest", produces = "text/html")
     public String getHtmlLatestCode(Model model) {
-        List<Code> lastCodeStore = new ArrayList<>();
+        List<Code> lastCodesStore = new ArrayList<>();
 
-        for (int i = codeRepository.lastIndexRepository(); i >=codeRepository.outputLimitIndex() ; i--) {
+        for (int i = codeRepository.lastIndexRepository(); i >= codeRepository.outputLimitIndex(); i--) {
             Code eachCode = codeRepository.getStorage().get(i);
-            lastCodeStore.add(eachCode);
+            lastCodesStore.add(eachCode);
         }
-        model.addAttribute("latestCodesStore", lastCodeStore);
+        model.addAttribute("lastCodesStore", lastCodesStore);
 
         return "lastcodes";
     }
 
-    @GetMapping(path = "/code/new",produces = "text/html")
-    public String getHtmlCodeNew(){
+
+    @GetMapping(path = "/code/new", produces = "text/html")
+    public String getHtmlCodeNew() {
         return "newcode";
     }
+
 }
