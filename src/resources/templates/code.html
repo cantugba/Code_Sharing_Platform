@@ -4,11 +4,16 @@
 
 
 <head th:fragment="headerfragment">
-    <meta charset="UTF-8"/>
-    <title th:text="${responseCode.title">Template Title</title>
+
+    <meta charset="utf-8"/>
+    <title th:text="${responseCode.title}">Template Title</title>
+
 </head>
+
 <body>
-    <span id="load_date" th:text="${responseCode.date"></span>
-    <pre id="code_snippet" th:text="${responseCode.code"></pre>
+
+<span id="load_date" th:text="${responseCode.date}"></span>
+<pre id="code_snippet" th:text="${responseCode.code}"></pre>
+
 </body>
 </html>

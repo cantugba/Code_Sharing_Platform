@@ -43,14 +43,14 @@ public class ApiController {
         return responseCode.toArray();
     }
 
-    @PostMapping(path = "api/code/new", produces = "application/json;charset=UTF-8")
+    @PostMapping(path = "/api/code/new", produces = "application/json;charset=UTF-8")
     public String setApiCode(@RequestBody Code newCode) {
         Code responseCode = new Code();
         responseCode.setCode(newCode.getCode());
         responseCode.setTitle("Code");
         responseCode.setDate(Util.getCurrentDateTime());
         codeRepository.getStorage().add(responseCode);
-        String response = "{ \"id\" : \"" + codeRepository.getStorage().size() + "\"}";
+        String response = "{ \"id\" : \"" + codeRepository.getStorage().size() + "\" }";
         return response;
     }
 }
