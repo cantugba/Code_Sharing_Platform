@@ -3,6 +3,10 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
+    <link rel="stylesheet"
+          href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.2.1/build/styles/default.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.2.1/build/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
 
     <meta charset="utf-8"/>
     <title>Latest</title>
@@ -13,7 +17,7 @@
 
 <div th:each="eachLastCode : ${lastCodesStore}">
     <span id="load_date" th:text="${eachLastCode.date}"></span>
-    <pre id="code_snippet" th:text="${eachLastCode.code}"></pre>
+    <pre id="code_snippet"><code th:text="${eachLastCode.code}"></code></pre>
 </div>
 
 </body>
