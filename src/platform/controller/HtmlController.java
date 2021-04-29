@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import platform.model.Code;
 import platform.service.CodeService;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -24,9 +24,20 @@ public class HtmlController {
     }
 
     @GetMapping(path = "/code/{id}", produces = "text/html")
-    public String getHtmlCode(@PathVariable("id") int id, Model model) {
+    public String getHtmlCode(@PathVariable("id") String id, Model model) {
 
         Code responseCode = service.getCodeFromStorage(id);
+        if (responseCode.isViewLimit()) {
+            service.updateViewById(id);
+            responseCode = service.getCodeFromStorage(id);
+        }
+        if (responseCode.isTimeLimit()) {
+//            LocalDateTime currentTime = LocalDateTime.now();
+//            service.updateLocalTimeById(id, currentTime);
+            long currentSecond = System.currentTimeMillis();
+            service.updateTimeById(id, currentSecond);
+            responseCode = service.getCodeFromStorage(id);
+        }
         model.addAttribute("responseCode", responseCode);
 
         return "code";
@@ -34,14 +45,8 @@ public class HtmlController {
 
     @GetMapping(path = "/code/latest", produces = "text/html")
     public String getHtmlLatestCode(Model model) {
-        List<Code> lastCodesStore = new ArrayList<>();
-
-        for (int i = service.lastIdRepository(); i >= service.outputLimitId(); i--) {
-            Code eachCode = service.getCodeFromStorage(i);
-            lastCodesStore.add(eachCode);
-        }
+        List<Code> lastCodesStore = service.getLastCode();
         model.addAttribute("lastCodesStore", lastCodesStore);
-
         return "lastcodes";
     }
 

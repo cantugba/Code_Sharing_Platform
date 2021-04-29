@@ -6,6 +6,13 @@ import platform.exception.CodeNotFoundException;
 import platform.model.Code;
 import platform.repository.CodeRepository;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -18,12 +25,10 @@ public class CodeService {
     }
 
     public void addCodeToStorage(Code code) {
-        long counter = codeRepository.count() + 1;
-        code.setId((int) counter);
         codeRepository.save(code);
     }
 
-    public Code getCodeFromStorage(int id){
+    public Code getCodeFromStorage(String id) {
         Optional<Code> requiredCode = codeRepository.findById(id);
         if (requiredCode.isEmpty()) {
             throw new CodeNotFoundException();
@@ -32,13 +37,58 @@ public class CodeService {
         }
     }
 
-    public int lastIdRepository(){
-        return (int) codeRepository.count();
+    public void updateViewById(String id) {
+        Code updateCode = getCodeFromStorage(id);
+        int views = updateCode.getViews();
+        if (views > 0) {
+            views--;
+            updateCode.setViews(views);
+            codeRepository.save(updateCode);
+        } else {
+            codeRepository.delete(updateCode);
+        }
     }
 
-    public int outputLimitId() {
-        int NUMBER_ON_PAGE = 10;
-        return codeRepository.count() % NUMBER_ON_PAGE == (int) codeRepository.count() ? 1
-                : (int) (codeRepository.count() % NUMBER_ON_PAGE + 1);
+    public void updateTimeById(String id, long currentSecond) {
+        Code updateCode = getCodeFromStorage(id);
+        long time = updateCode.getTime() - ((currentSecond - updateCode.getStartSeconds())/ 1000);
+        if (time > 0) {
+            updateCode.setTime(time);
+            codeRepository.save(updateCode);
+        } else {
+            codeRepository.delete(updateCode);
+        }
     }
+
+    public void updateLocalTimeById(String id, LocalDateTime currentTime) {
+        Code updateCode = getCodeFromStorage(id);
+        long secBetween = ChronoUnit.SECONDS.between(updateCode.getStartTime(), currentTime);
+        int time = (int) (updateCode.getTime() - secBetween);
+        if (time > 0) {
+            updateCode.setTime(time);
+            codeRepository.save(updateCode);
+        } else {
+            codeRepository.delete(updateCode);
+        }
+    }
+
+    public List<Code> getLastCode() {
+        List<Code> codesWithoutLimit = new ArrayList<>();
+        codeRepository.findAll().forEach(code -> {
+            if (!code.isViewLimit() && !code.isTimeLimit()) {
+                codesWithoutLimit.add(code);
+            }
+        });
+        List<Code> lastCodes = new ArrayList<>();
+        int NUMBER_ON_PAGE = 10;
+        int lastIdRepository = codesWithoutLimit.size() - 1;
+        int outputLimitId = codesWithoutLimit.size() % NUMBER_ON_PAGE == codesWithoutLimit.size() ? 0
+                : codesWithoutLimit.size() % NUMBER_ON_PAGE;
+        for (int i = lastIdRepository; i >= outputLimitId; i--) {
+            Code eachCode = codesWithoutLimit.get(i);
+            lastCodes.add(eachCode);
+        }
+        return lastCodes;
+    }
+
 }

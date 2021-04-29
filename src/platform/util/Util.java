@@ -2,6 +2,7 @@ package platform.util;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 
 public class Util {
 
@@ -9,5 +10,10 @@ public class Util {
         LocalDateTime today = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return today.format(formatter);
+    }
+
+    public static String getNewUUID() {
+        UUID uuid = UUID.randomUUID();
+        return uuid.toString();
     }
 }

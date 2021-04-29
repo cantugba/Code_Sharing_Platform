@@ -17,7 +17,21 @@
 <body>
 
 <span id="load_date" th:text="${responseCode.date}"></span>
+<p>
+    <span th:if="${responseCode.viewLimit}? ${responseCode.views >= 0}">
+<!--        <span th:if="${responseCode.views > 0}">-->
+            <span id="views_restriction" th:text="${responseCode.views}"></span> more views allowed
+        <!--        </span>-->
+    </span>
+</p>
+<p>
+    <span th:if="${responseCode.timeLimit}? ${responseCode.time >= 0}">
+<!--    <span th:if="${responseCode.time > 0}">-->
+    The code will be available for <span id="time_restriction" th:text="${responseCode.time}"></span> seconds
+    </span>
+</p>
 <pre id="code_snippet"><code th:text="${responseCode.code}"></code></pre>
+
 
 </body>
 </html>

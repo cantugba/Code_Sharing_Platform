@@ -6,8 +6,8 @@ import platform.model.Code;
 import platform.service.CodeService;
 import platform.util.Util;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
+
 
 @RestController
 public class ApiController {
@@ -22,31 +22,42 @@ public class ApiController {
         this.service = service;
     }
 
-    // GET /api/code/N should return JSON with the N-th uploaded code snippet.
     @GetMapping(path = "/api/code/{id}", produces = "application/json;charset=UTF-8")
-    public Code getApiCode(@PathVariable("id") int id) {
+    public Code getApiCode(@PathVariable("id") String id) {
+        Code responseCode = service.getCodeFromStorage(id);
+
+        if (responseCode.isViewLimit()) {
+            service.updateViewById(id);
+        }
+        if (responseCode.isTimeLimit()) {
+//            LocalDateTime currentTime = LocalDateTime.now();
+//            service.updateLocalTimeById(id, currentTime);
+            long currentSecond = System.currentTimeMillis();
+            service.updateTimeById(id, currentSecond);
+
+        }
         return service.getCodeFromStorage(id);
     }
 
-    //GET /api/code/latest should return a JSON array with 10 most recently uploaded code snippets sorted from the newest to the oldest.
     @GetMapping(path = "/api/code/latest", produces = "application/json;charset=UTF-8")
     public Object[] getApiLatestCode() {
-        List<Code> responseCode = new ArrayList<>();
-
-        for (int i = service.lastIdRepository(); i >= service.outputLimitId(); i--) {
-            Code eachCode = service.getCodeFromStorage(i);
-            responseCode.add(eachCode);
-        }
-        return responseCode.toArray();
+        return service.getLastCode().toArray();
     }
 
-    // POST /api/code/new should take a JSON object with a single field code, use it as the current code snippet, and return JSON with a single field id. ID is the unique number of the code snippet that can help you access it via the endpoint GET /code/N
+
     @PostMapping(path = "/api/code/new", produces = "application/json;charset=UTF-8")
     public String setApiCode(@RequestBody Code newCode) {
         Code responseCode = new Code();
         responseCode.setCode(newCode.getCode());
         responseCode.setTitle("Code");
-        responseCode.setDate(Util.getCurrentDateTime());
+//        responseCode.setId(Util.getNewUUID());
+        responseCode.setTime(newCode.getTime());
+        responseCode.setStartSeconds(System.currentTimeMillis());
+        responseCode.setStartTime(LocalDateTime.now());
+        System.out.println(responseCode.getStartSeconds());
+        responseCode.setViews(newCode.getViews());
+        responseCode.setViewLimit(newCode.getViews() > 0);
+        responseCode.setTimeLimit(newCode.getTime() > 0);
         service.addCodeToStorage(responseCode);
         String response = "{ \"id\" : \"" + responseCode.getId() + "\" }";
         return response;
